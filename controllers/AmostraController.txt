@@ -1,0 +1,142 @@
+const getToken = require("../helpers/get-token");
+const Amostra = require("../models/Amostra");
+const getUserByToken = require("../helpers/get-user-by-token");
+
+
+module.exports = class AmostraController {
+
+ static async novaAmostra (req,res){
+
+    const{nome_amostra,data_amostra,ensaios_solicitados } = req.body
+
+    const token = getToken(req);
+    const user = await getUserByToken(token);
+
+    if(!nome_amostra){
+        res.status(422).json({message: 'A identificaçao da amostra precisa ser informada!' });
+        return;
+    }
+    if(!data_amostra){
+        res.status(422).json({message: 'A data não pode ser vazia!' });
+        return;
+    }
+    if(!ensaios_solicitados){
+        res.status(422).json({message: 'Os ensaios devem ser incluídos!' });
+        return;
+    }
+
+
+
+    const amostra = new Amostra({
+        nome_amostra: nome_amostra,
+        data_amostra: data_amostra ,
+        ensaios_solicitados: ensaios_solicitados,
+        solicitante: {
+              id: user.id,
+              name: user.name,
+              email: user.email,
+              phone: user.phone
+            },
+      });
+  
+      try {
+        await amostra.save();
+        res.status(200).json({message: 'Amostra cadastrada!' });
+      } catch (error) {
+        res.status(500).json({ message: error });
+      }
+ }
+
+ static async editarAmostra (req,res){
+    const id = req.params.id;
+    const{nome_amostra,data_amostra,ensaios_solicitados } = req.body
+    
+    const verificarAmostra = await Amostra.findById(id);
+
+    if(!verificarAmostra){
+        res.status(422).json({message: 'Amostra não encontrada !' });
+        return;
+    }
+
+    if(!nome_amostra){
+        res.status(422).json({message: 'A identificaçao da amostra precisa ser informada!' });
+        return;
+    }
+    if(!data_amostra){
+        res.status(422).json({message: 'A data não pode ser vazia!' });
+        return;
+    }
+    if(!ensaios_solicitados){
+        res.status(422).json({message: 'Os ensaios devem ser incluídos!' });
+        return;
+    }
+
+    try {
+        await Amostra.findOneAndUpdate(
+          { _id: id },
+          { $set: {nome_amostra,data_amostra,ensaios_solicitados } },
+          { new: true }
+        );
+  
+        res.status(200).json({
+          message: "Dados atualizados com sucesso!",
+        });
+      } catch (error) {
+        res.status(500).json({ message: error });
+        return;
+      }
+  
+ }
+
+ static async listarAmostras( req,res){
+    try {
+        const amostras= await Amostra.find().select('-__v')
+
+        res.status(200).json({amostras:amostras})
+    } catch (error) {
+        res.status(200).json({error})
+    }
+ }
+
+ static async listarAmostrasPorIdUsuario( req,res){
+
+    const token = getToken(req);
+    const user = await getUserByToken(token);
+    const id = user.id;
+
+    try {
+        const amostras = await Amostra.find({ 'solicitante.id': id });
+
+        res.status(200).json({amostras:amostras})
+    } catch (error) {
+        res.status(200).json({error})
+    }
+ }
+
+ static async deletarAmostra(req,res){
+    const id = req.params.id;
+
+    const amostra = await amostra.findById(id);
+
+    if (!amostra) {
+      res.status(422).json({ message: "Amostra não encontrada" });
+      return;
+    }
+
+    try {
+
+        await Amostra.deleteOne({ _id: id }
+        );
+        res.status(200).json({
+          message: "Amostra deletada com sucesso!",
+        });
+      } catch (error) {
+        res.status(500).json({ message: error });
+        return;
+      }
+    }
+ }
+
+
+
+
