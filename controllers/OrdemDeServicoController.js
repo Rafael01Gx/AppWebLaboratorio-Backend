@@ -66,28 +66,31 @@ if (!amostras || typeof amostras !== 'object' || Object.keys(amostras).length ==
   static async editarOrdemDeServicoAdm(req, res) {
     try {
       const { id } = req.params;
-      const { data_recepcao, status, prazo_inicio_fim } = req.body;
+      const ordemDeServico = req.body.ordemDeServico
+
+
+     // const { data_recepcao, status, prazo_inicio_fim } = req.body;
   
       const ordemServico = await OrdemDeServico.findById(id);
       if (!ordemServico) {
         return res.status(422).json({ message: "Ordem de serviço não encontrada!" });
       }
 
-      if (!status && !data_recepcao && !prazo_inicio_fim) {
+      if (!ordemDeServico.status && !ordemDeServico.data_recepcao && !ordemDeServico.prazo_inicio_fim) {
         return res.status(422).json({ message: "Não existem itens para serem modificados!" });
       }
   
       const updates = {};
-      if (prazo_inicio_fim) updates.prazo_inicio_fim = prazo_inicio_fim;
-      if (data_recepcao) updates.data_recepcao = data_recepcao;
+      if (ordemDeServico.prazo_inicio_fim) updates.prazo_inicio_fim = ordemDeServico.prazo_inicio_fim;
+      if (ordemDeServico.data_recepcao) updates.data_recepcao = ordemDeServico.data_recepcao;
 
       const statusValido = ["Aguardando Autorização", "Autorizada", "Em Execução", "Finalizada", "Cancelada"];
       
-      if (status) {
-        if (!statusValido.includes(status)) {
+      if (ordemDeServico.status) {
+        if (!statusValido.includes(ordemDeServico.status)) {
           return res.status(422).json({ message: "Status inválido!" });
         }
-        updates.status = status;
+        updates.status = ordemDeServico.status;
       }
   
       const ordemAtualizada = await OrdemDeServico.findByIdAndUpdate(
@@ -96,10 +99,10 @@ if (!amostras || typeof amostras !== 'object' || Object.keys(amostras).length ==
         { new: true }
       );
 
-      if (status) {
+      if (ordemDeServico.status) {
         await Amostra.updateMany(
           { numeroOs: ordemServico.numeroOs },
-          { $set: { status } }
+          { $set: { status : ordemDeServico.status} }
         );
       }
   

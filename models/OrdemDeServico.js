@@ -42,7 +42,12 @@ const OrdemDeServico = mongoose.model(
     prazo_inicio_fim: {
       type: String,
       required: false,
+    },
+    observacao_adm: {
+      type: String,
+      required: false
     }
+    
   }, { timestamps: true })
 );
 
