@@ -39,6 +39,16 @@ const Amostra = mongoose.model(
         required: true,
         default: "Aguardando Autorização"
       },
+      prazo_inicio_fim: {
+        type: String,
+        required: false,
+        default: "Aguardando"
+      },
+      data_recepcao: {
+        type: String,
+        required: false,
+        default: "Aguardando"
+      }
   }, { timestamps: true })
 );
 

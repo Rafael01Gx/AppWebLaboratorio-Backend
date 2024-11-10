@@ -80,9 +80,16 @@ if (!amostras || typeof amostras !== 'object' || Object.keys(amostras).length ==
         return res.status(422).json({ message: "Não existem itens para serem modificados!" });
       }
   
-      const updates = {};
-      if (ordemDeServico.prazo_inicio_fim) updates.prazo_inicio_fim = ordemDeServico.prazo_inicio_fim;
-      if (ordemDeServico.data_recepcao) updates.data_recepcao = ordemDeServico.data_recepcao;
+      const updates_Os = {};
+      const update_amostra={};
+      if (ordemDeServico.prazo_inicio_fim){ 
+        updates_Os.prazo_inicio_fim= ordemDeServico.prazo_inicio_fim;
+        update_amostra.prazo_inicio_fim = ordemDeServico.prazo_inicio_fim;
+      }
+      if (ordemDeServico.data_recepcao) {
+        updates_Os.data_recepcao = ordemDeServico.data_recepcao;
+        update_amostra.data_recepcao = ordemDeServico.data_recepcao;
+      }
 
       const statusValido = ["Aguardando Autorização", "Autorizada", "Em Execução", "Finalizada", "Cancelada"];
       
@@ -90,19 +97,21 @@ if (!amostras || typeof amostras !== 'object' || Object.keys(amostras).length ==
         if (!statusValido.includes(ordemDeServico.status)) {
           return res.status(422).json({ message: "Status inválido!" });
         }
-        updates.status = ordemDeServico.status;
+        updates_Os.status = ordemDeServico.status;
+        if(ordemDeServico.status != "Em Execução")update_amostra.status = ordemDeServico.status;
+
       }
   
       const ordemAtualizada = await OrdemDeServico.findByIdAndUpdate(
         id,
-        { $set: updates },
+        { $set: updates_Os },
         { new: true }
       );
 
-      if (ordemDeServico.status) {
+      if (update_amostra) {
         await Amostra.updateMany(
           { numeroOs: ordemServico.numeroOs },
-          { $set: { status : ordemDeServico.status} }
+          { $set: update_amostra }
         );
       }
   
