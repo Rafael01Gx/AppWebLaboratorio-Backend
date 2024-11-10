@@ -1,5 +1,5 @@
 const getToken = require("../helpers/get-token");
-const send = require("../helpers/nodemailer");
+const sendMail = require("../helpers/nodemailer");
 const Amostra = require("../models/Amostra");
 const User = require("../models/User");
 const getUserByToken = require("../helpers/get-user-by-token");
@@ -352,7 +352,7 @@ async function enviarEmailNovaOs(ordemDeServico) {
     </style>
     </html>`;
 
-    send(to, subject, body);
+    sendMail(to, subject, body);
   } catch (error) {
     console.log(error);
   }

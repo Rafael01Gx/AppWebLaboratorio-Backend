@@ -1,6 +1,6 @@
 const jwt = require("jsonwebtoken");
 const User = require("../models/User");
-const {token_key} = require("../config");
+const {token_key} = require("../../config");
 
 // get user by jwt token
 const getUserByToken = async (token) => {

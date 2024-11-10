@@ -1,4 +1,4 @@
-const mongoose = require("../db/conn");
+const mongoose = require("../../db/conn");
 const { Schema } = mongoose;
 
 const MateriaPrima = mongoose.model(

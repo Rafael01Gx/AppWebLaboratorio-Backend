@@ -5,14 +5,14 @@ const { port } = require('./config');
 const app = express()
 
 // RoutesImports
-const UserRoutes = require('./routes/UserRoutes');
-const TipoDeAnaliseRoutes = require('./routes/TipoDeAnaliseRoutes');
-const ParametrosDeAnaliseRoutes = require('./routes/ParametrosDeAnaliseRoutes');
-const AmostraRoutes = require('./routes/AmostraRoutes');
-const ConfiguracaoDeAnaliseRoutes = require('./routes/ConfiguracaoDeAnaliseRoutes');
-const MateriaPrimaRoutes = require('./routes/MateriaPrimaRoutes');
-const OrdemDeServicoRoutes = require('./routes/OrdemDeServicoRoutes');
-const AuthRoutes = require('./routes/AuthRoutes');
+const UserRoutes = require('./app/routes/UserRoutes');
+const TipoDeAnaliseRoutes = require('./app/routes/TipoDeAnaliseRoutes');
+const ParametrosDeAnaliseRoutes = require('./app/routes/ParametrosDeAnaliseRoutes');
+const AmostraRoutes = require('./app/routes/AmostraRoutes');
+const ConfiguracaoDeAnaliseRoutes = require('./app/routes/ConfiguracaoDeAnaliseRoutes');
+const MateriaPrimaRoutes = require('./app/routes/MateriaPrimaRoutes');
+const OrdemDeServicoRoutes = require('./app/routes/OrdemDeServicoRoutes');
+const AuthRoutes = require('./app/routes/AuthRoutes');
 
 
 

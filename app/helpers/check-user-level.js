@@ -1,6 +1,6 @@
   const jwt = require("jsonwebtoken");
 const getToken = require("./get-token");
-const config = require("../config");
+const config = require("../../config");
 
 // middleware to validate token
 const checkLevel = (req, res, next) => {

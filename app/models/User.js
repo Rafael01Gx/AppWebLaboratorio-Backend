@@ -1,4 +1,4 @@
-const mongoose = require("../db/conn")
+const mongoose = require("../../db/conn")
 const { Schema } = mongoose
 
 const User = mongoose.model(
@@ -14,7 +14,8 @@ const User = mongoose.model(
         },
         password:{
             type: String,
-            required: true
+            required: true,
+            select:false
         },
         phone:{
             type: String,
@@ -31,7 +32,15 @@ const User = mongoose.model(
             type: String,
             required : true,
             default: "Usuário"
-        }
+        },
+        passwordResetToken:{
+            type: String,
+            select:false
+        },
+        passwordResetExpires:{
+            type: Date,
+            select:false
+        },
 
     },{timestamps: true})
 )
