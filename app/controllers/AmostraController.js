@@ -7,7 +7,8 @@ module.exports = class AmostraController {
 
  static async editarAmostra (req,res){
     const id = req.params.id;
-    const resultado  = req.body 
+    const {amostra}  = req.body 
+    console.log(amostra);
     
     const verificarAmostra = await Amostra.findById(id);
 
@@ -16,18 +17,14 @@ module.exports = class AmostraController {
         return;
     }
 
-    if(!resultado){
+    if(!amostra){
         res.status(422).json({message: 'Sem dados a serem incluídos!' });
         return;
     return;
     }
 
     try {
-        await Amostra.findOneAndUpdate(
-          { _id: id },
-          { $set: resultado },
-          { new: true }
-        );
+        await Amostra.findOneAndUpdate({_id: id} ,amostra);
   
         res.status(200).json({
           message: "Dados incluídos com sucesso!",
