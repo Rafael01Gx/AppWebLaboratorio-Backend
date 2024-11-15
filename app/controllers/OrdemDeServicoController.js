@@ -116,12 +116,12 @@ module.exports = class OrdemDeServicoController {
           return res.status(422).json({ message: "Status inválido!" });
         }
         updates_Os.status = ordemDeServico.status;
-        if (ordemDeServico.status != "Em Execução")
+        if (ordemDeServico.status !== "Em Execução")
           update_amostra.status = ordemDeServico.status;
       }
 
       const ordemAtualizada = await OrdemDeServico.findByIdAndUpdate(
-        id,
+        id, 
         { $set: updates_Os },
         { new: true }
       );
@@ -186,6 +186,13 @@ module.exports = class OrdemDeServicoController {
       });
       return;
     }
+    // console.log
+    /* if (ordemDeServico.status !== "Aguardando Autorização" && ordemDeServico.status !== "Autorizada") {
+      res.status(422).json({
+        message: "Você não pode excluir uma ordem de serviço 'Em Execução'.",
+      });
+      return;
+    } */
 
     try {
       await OrdemDeServico.deleteOne({ _id: id });

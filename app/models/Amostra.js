@@ -30,7 +30,7 @@ const Amostra = mongoose.model(
         { _id: false }),
         required: true
       },
-      resultado: {
+      resultados: {
         type: Schema.Types.Mixed,
         required: false
       },

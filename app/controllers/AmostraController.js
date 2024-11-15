@@ -8,8 +8,7 @@ module.exports = class AmostraController {
  static async editarAmostra (req,res){
     const id = req.params.id;
     const {amostra}  = req.body 
-    console.log(amostra);
-    
+
     const verificarAmostra = await Amostra.findById(id);
 
     if(!verificarAmostra){
