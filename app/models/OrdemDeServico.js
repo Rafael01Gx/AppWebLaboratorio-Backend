@@ -39,9 +39,14 @@ const OrdemDeServico = mongoose.model(
       required: true,
       default: "Aguardando Autorização"
     },
+    progresso: {
+      type: Schema.Types.Mixed,
+      required: false
+    },
     prazo_inicio_fim: {
       type: String,
       required: false,
+      default: "Aguardando"
     },
     observacao_adm: {
       type: String,

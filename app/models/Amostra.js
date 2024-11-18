@@ -39,6 +39,11 @@ const Amostra = mongoose.model(
         required: true,
         default: "Aguardando Autorização"
       },
+      progresso: {
+        type: Number,
+        required: false,
+        default: 0
+      },
       prazo_inicio_fim: {
         type: String,
         required: false,

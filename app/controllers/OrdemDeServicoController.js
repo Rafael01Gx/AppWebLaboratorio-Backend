@@ -23,12 +23,12 @@ module.exports = class OrdemDeServicoController {
     const user = await getUserByToken(token);
 
     const numeroOs = gerarNumeroOrdemDeServico();
-
+    const ordem_servico_progresso = {}
     for (const chave in amostras) {
       if (amostras.hasOwnProperty(chave)) {
         const { nome_amostra, data_amostra, ensaios_solicitados } =
           amostras[chave];
-
+        ordem_servico_progresso[nome_amostra]=0;
         const amostra = new Amostra({
           numeroOs: numeroOs,
           nome_amostra: nome_amostra,
@@ -58,6 +58,7 @@ module.exports = class OrdemDeServicoController {
         phone: user.phone,
       },
       amostras: amostras,
+      progresso:ordem_servico_progresso,
       data_solicitacao: data_solicitacao,
       observacao: observacao,
     });

@@ -1,6 +1,7 @@
 const getToken = require("../helpers/get-token");
 const Amostra = require("../models/Amostra");
 const getUserByToken = require("../helpers/get-user-by-token");
+const OrdemDeServico = require("../models/OrdemDeServico");
 
 
 module.exports = class AmostraController {
@@ -22,8 +23,16 @@ module.exports = class AmostraController {
     return;
     }
 
+  
+
     try {
         await Amostra.findOneAndUpdate({_id: id} ,amostra);
+
+        if(amostra.progresso !== 0 ){
+          const updateProgresso = { [`progresso.${amostra.nome_amostra}`]: amostra.progresso };
+          console.log(updateProgresso);
+          await OrdemDeServico.findOneAndUpdate({ numeroOs: amostra.numeroOs }, { $set: updateProgresso });
+         }
   
         res.status(200).json({
           message: "Dados incluídos com sucesso!",
