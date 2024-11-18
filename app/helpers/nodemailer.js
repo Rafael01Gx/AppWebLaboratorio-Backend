@@ -5,6 +5,7 @@ const config = require('../../config')
 const transporter = nodemailer.createTransport({
     host: config.mail_HOST,
     port: config.mail_PORT,
+    secure:true,
     auth:{
         user: config.mail_USER,
         pass: config.mail_PASS
@@ -13,7 +14,7 @@ const transporter = nodemailer.createTransport({
 
 const sendMail = (to,subject,email_body)=>{
 transporter.sendMail({
-    from: config.mail_FROM,
+  //  from: config.mail_FROM,
     to:to,
     subject: subject,
     html: email_body

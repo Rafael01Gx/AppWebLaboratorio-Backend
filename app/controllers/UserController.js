@@ -351,7 +351,7 @@ module.exports = class UserController {
       
                           <!-- Body -->
                           <tr>
-                              <td class="body" style="padding: 40px; text-align: left; font-size: 16px; line-height: 1.6;">
+                              <td class="body gray" style="padding: 40px; text-align: left; font-size: 16px; line-height: 1.6;">
                                   Olá ${user.name}, <br><br>
                                   Recebemos uma solicitação para redefinir sua senha. Se você fez essa solicitação, clique no botão abaixo para escolher uma nova senha:
                                   <br><br>
@@ -361,7 +361,7 @@ module.exports = class UserController {
       
                           <!-- Call to action Button -->
                           <tr>
-                              <td style="padding: 0px 40px 0px 40px; text-align: center;">
+                              <td class="gray" style="padding: 0px 40px 0px 40px; text-align: center;">
                                   <!-- CTA Button -->
                                   <table cellspacing="0" cellpadding="0" style="margin: auto;">
                                       <tr>
@@ -375,7 +375,7 @@ module.exports = class UserController {
       
                           <!-- Extra Text -->
                           <tr>
-                              <td class="body" style="padding: 40px; text-align: left; font-size: 16px; line-height: 1.6;">
+                              <td class="body gray" style="padding: 40px; text-align: left; font-size: 16px; line-height: 1.6;">
                                   Este link é válido por uma hora. Após esse período, será necessário solicitar novamente a redefinição de senha.
                               </td>
                           </tr>
@@ -393,22 +393,16 @@ module.exports = class UserController {
       </body>
       <style>
       .btn-color{
-      background-color: oklch(53.18% 0.28 296.97);
+      background-color: #005cbb;
+      }
+     .gray{
+        background: #EEEEEE;
       }
       .footer{
-      background:linear-gradient(
-      90deg,
-      oklch(53.18% 0.28 296.97) 0%,
-      oklch(69.02% 0.277 332.77) 50%,
-      oklch(63.32% 0.24 31.68) 100%);
+      background:#005cbb;
       }
      .header{
-       background:  linear-gradient(
-      90deg,
-      oklch(63.32% 0.24 31.68) 0%,
-      oklch(69.02% 0.277 332.77) 50%,
-      oklch(53.18% 0.28 296.97) 100%
-    );}
+       background:#005cbb;}
         @media screen and (max-width: 600px) {
           .content {
               width: 100% !important;

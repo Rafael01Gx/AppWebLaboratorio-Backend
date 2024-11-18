@@ -278,7 +278,7 @@ async function enviarEmailNovaOs(ordemDeServico) {
     
                         <!-- Body -->
                         <tr>
-                            <td class="body" style="padding: 40px; text-align: left; font-size: 16px; line-height: 1.6;">
+                            <td class="body gray" style="padding: 40px; text-align: left; font-size: 16px; line-height: 1.6;">
                                 Prezado(a),<br><br>
                                 Uma nova ordem de serviço foi criada.<br><br>
                                 
@@ -321,14 +321,14 @@ async function enviarEmailNovaOs(ordemDeServico) {
     
                         <!-- Important Notice -->
                         <tr>
-                            <td class="important-notice" style="padding: 20px; text-align: left; font-size: 16px; line-height: 1.6; background-color: #f8f8f8;">
-                                <strong>Importante:</strong> Esta mensagem foi gerada automaticamente e não deve ser respondida. Caso tenha alguma dúvida, entre em contato por meio dos canais apropriados.
+                            <td class="important-notice" style="padding: 20px; text-align: left; font-size: 16px; line-height: 1.6; background-color:#e0e0df;">
+                                <strong style="color:red;">Importante:</strong> Esta mensagem foi gerada automaticamente e não deve ser respondida. Caso tenha alguma dúvida, entre em contato por meio dos canais apropriados.
                             </td>
                         </tr>
     
                         <!-- Footer -->
                         <tr>
-                            <td class="footer" style="background-color: #333333; padding: 40px; text-align: center; color: white; font-size: 14px;">
+                            <td class="footer" style="background-color: #005cbb; padding: 40px; text-align: center; color: white; font-size: 14px;">
                                 Copyright &copy; 2024 | Equipe de Gerenciamento de Ordens de Serviço
                             </td>
                         </tr>
@@ -338,13 +338,12 @@ async function enviarEmailNovaOs(ordemDeServico) {
         </table>
     </body>
     <style>
-     .header{
-       background:  linear-gradient(
-      90deg,
-      oklch(63.32% 0.24 31.68) 0%,
-      oklch(69.02% 0.277 332.77) 50%,
-      oklch(53.18% 0.28 296.97) 100%
-    );}
+     .header {
+  background: #005cbb;
+}
+     .gray{
+        background: #EEEEEE;
+      }
 
       @media screen and (max-width: 600px) {
         .content {
