@@ -20,6 +20,11 @@ const Amostra = mongoose.model(
       type: String,
       required: true
     },
+    amostra_tipo: {         
+      type: String,
+      required: false,
+      default: "Não definido"
+    },
     solicitante: {
         type: new Schema({
           _id: { type: Schema.Types.ObjectId, required: true },

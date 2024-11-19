@@ -68,6 +68,20 @@ module.exports = class AmostraController {
         res.status(200).json({error})
     }
  }
+ static async listarAmostrasPorOrdemDeServico( req,res){
+
+    const numeroOs =  req.params.id;
+
+    if(!numeroOs) return res.status(404).json({message: 'Número da Ordem de Serviço precisa ser informado!' })
+
+    try {
+        const amostras = await Amostra.find({ numeroOs: numeroOs });
+        if(!amostras) return res.status(404).json({message: 'Nenhuma amostra foi encontrada para ordem de serviço informada' })
+        res.status(200).json({amostras:amostras})
+    } catch (error) {
+        res.status(200).json({error})
+    }
+ }
 
  static async deletarAmostra(req,res){
     const id = req.params.id;
