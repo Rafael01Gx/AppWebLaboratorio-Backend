@@ -187,13 +187,13 @@ module.exports = class OrdemDeServicoController {
       });
       return;
     }
-    // console.log
-    /* if (ordemDeServico.status !== "Aguardando Autorização" && ordemDeServico.status !== "Autorizada") {
+ 
+     if (ordemDeServico.status !== "Aguardando Autorização" && ordemDeServico.status !== "Autorizada") {
       res.status(422).json({
         message: "Você não pode excluir uma ordem de serviço 'Em Execução'.",
       });
       return;
-    } */
+    }
 
     try {
       await OrdemDeServico.deleteOne({ _id: id });
@@ -271,7 +271,7 @@ async function enviarEmailNovaOs(ordemDeServico) {
                     <table class="content" width="600" border="0" cellspacing="0" cellpadding="0" style="border-collapse: collapse; border: 1px solid #cccccc;">
                         <!-- Header -->
                         <tr>
-                            <td class="header" style=" padding: 40px; text-align: center; color: white; font-size: 24px;">
+                            <td class="header" style=" background-color: #005cbb; padding: 40px; text-align: center; color: white; font-size: 24px;">
                                 Notificação de Nova Ordem de Serviço
                             </td>
                         </tr>
@@ -306,7 +306,7 @@ async function enviarEmailNovaOs(ordemDeServico) {
                                     ${Object.entries(ordemDeServico.amostras)
                                       .map(
                                         ([key, amostra]) =>
-                                          `<li>${amostra.nome_amostra}</li>`
+                                          `<li>${amostra.nome_amostra} - ${amostra.ensaios_solicitados}. </li>`
                                       )
                                       .join("")}
                                 </ul>
@@ -339,7 +339,7 @@ async function enviarEmailNovaOs(ordemDeServico) {
     </body>
     <style>
      .header {
-  background: #005cbb;
+  background-color: #005cbb;
 }
      .gray{
         background: #EEEEEE;
