@@ -1,4 +1,5 @@
-const env = require('env-var')
+const env = require('env-var');
+require('dotenv').config();
 const config = {
     token_key: env.get('TOKEN_KEY').required().asString(),
     db_URL: env.get('DATABASE_URL').required().asUrlString(),

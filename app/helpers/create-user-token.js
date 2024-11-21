@@ -1,5 +1,5 @@
 const jwt = require("jsonwebtoken");
-const { token_key } = require("../../config");
+const config = require("../../config");
 
 const createUserToken = async (user, req, res) => {
   // create token
@@ -11,7 +11,7 @@ const createUserToken = async (user, req, res) => {
       level: user.level,
       
     },
-    token_key
+    config.token_key
   );
 
   // return token

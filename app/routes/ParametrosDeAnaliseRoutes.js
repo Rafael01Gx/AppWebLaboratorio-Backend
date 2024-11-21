@@ -3,13 +3,13 @@ const ParametrosDeAnaliseController = require('../controllers/ParametrosDeAnalis
 
 //middleware
 const verifyToken = require('../helpers/verify-token')
-const checkLevel = require('../helpers/check-user-level')
+const {checkLevelOp} = require('../helpers/check-user-level')
 
 
-router.post('/criar',verifyToken,checkLevel,ParametrosDeAnaliseController.novoParametroDeAnalise) // Rota ADMIN
-router.patch('/editar/:id',verifyToken,checkLevel,ParametrosDeAnaliseController.editarParametroDeAnalise) // Rota ADMIN
-router.get('/listar',verifyToken,checkLevel,ParametrosDeAnaliseController.listarParametroAnalise) // Rota ADMIN
-router.delete('/deletar/:id',verifyToken,checkLevel,ParametrosDeAnaliseController.deletarParametroAnalise) // Rota ADMIN
+router.post('/criar',verifyToken,checkLevelOp,ParametrosDeAnaliseController.novoParametroDeAnalise) // Rota Op
+router.patch('/editar/:id',verifyToken,checkLevelOp,ParametrosDeAnaliseController.editarParametroDeAnalise) // Rota Op
+router.get('/listar',verifyToken,checkLevelOp,ParametrosDeAnaliseController.listarParametroAnalise) // Rota Op
+router.delete('/deletar/:id',verifyToken,checkLevelOp,ParametrosDeAnaliseController.deletarParametroAnalise) // Rota Op
 
 
 module.exports = router

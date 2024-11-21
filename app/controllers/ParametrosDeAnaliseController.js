@@ -1,6 +1,4 @@
-const getToken = require("../helpers/get-token");
 const ParametrosDeAnalise = require("../models/ParametrosDeAnalise");
-const getUserByToken = require("../helpers/get-user-by-token");
 const TipoDeAnalise = require("../models/TipoDeAnalise");
 
 module.exports = class ParametrosDeAnaliseController {
@@ -8,111 +6,92 @@ module.exports = class ParametrosDeAnaliseController {
     const { tipo_de_analise, unidade_de_medida, descricao } = req.body;
 
     if (!tipo_de_analise) {
-      res
-        .status(422)
-        .json({ message: "O tipo de análise precisa ser informado!" });
-      return;
+      return res.status(400).json({ message: "O tipo de análise precisa ser informado!" });
     }
-    const tipoDeAnalise = await TipoDeAnalise.findById(tipo_de_analise._id);
-    if (!tipoDeAnalise) {
-      return res
-        .status(422)
-        .json({ message: "O tipo de análise não cadastrado!" });
-    }
-
-    if (!descricao) {
-      res
-        .status(422)
-        .json({ message: "A descriçao precisa ser especificada!" });
-      return;
-    }
-
-    const parametrosDeAnalise = new ParametrosDeAnalise({
-      tipo_de_analise: {
-        _id: tipoDeAnalise._id,
-        tipo: tipoDeAnalise.tipo,
-        classe: tipoDeAnalise.classe,
-      },
-      unidade_de_medida: unidade_de_medida,
-      descricao: descricao,
-    });
 
     try {
+      const tipoDeAnalise = await TipoDeAnalise.findById(tipo_de_analise._id);
+      if (!tipoDeAnalise) {
+        return res.status(404).json({ message: "Tipo de análise não cadastrado!" });
+      }
+
+      if (!descricao) {
+        return res.status(400).json({ message: "A descrição precisa ser especificada!" });
+      }
+
+      const parametrosDeAnalise = new ParametrosDeAnalise({
+        tipo_de_analise: {
+          _id: tipoDeAnalise._id,
+          tipo: tipoDeAnalise.tipo,
+          classe: tipoDeAnalise.classe,
+        },
+        unidade_de_medida,
+        descricao,
+      });
+
       await parametrosDeAnalise.save();
-      res.status(200).json({ message: "Parâmetro de análise cadastrado!" });
+      return res.status(201).json({ message: "Parâmetro de análise cadastrado!" });
     } catch (error) {
-      res.status(500).json({ message: error });
+      return res.status(500).json({ message: "Erro ao cadastrar parâmetro de análise." });
     }
   }
 
   static async editarParametroDeAnalise(req, res) {
-    const id = req.params.id;
+    const { id } = req.params;
     const { tipo_de_analise, unidade_de_medida, descricao } = req.body;
 
-    const verificarParametro = await ParametrosDeAnalise.findById(id);
-
-    if (!verificarParametro) {
-      res.status(422).json({ message: "Parâmetro não encontrado!" });
-      return;
-    }
-    const tipoDeAnalise = await TipoDeAnalise.findById(tipo_de_analise.id);
-
-    !tipoDeAnalise
-      ? res.status(422).json({ message: "Tipo de análise inválido!" })
-      : null;
-
     try {
-      await ParametrosDeAnalise.findOneAndUpdate(
-        { _id: id },
+      const parametroExistente = await ParametrosDeAnalise.findById(id);
+      if (!parametroExistente) {
+        return res.status(404).json({ message: "Parâmetro não encontrado!" });
+      }
+
+      const tipoDeAnalise = await TipoDeAnalise.findById(tipo_de_analise?.id);
+      if (!tipoDeAnalise) {
+        return res.status(400).json({ message: "Tipo de análise inválido!" });
+      }
+
+      await ParametrosDeAnalise.findByIdAndUpdate(
+        id,
         {
-          $set: {
-            tipo_de_analise: {
-              _id: tipoDeAnalise._id,
-              tipo: tipoDeAnalise.tipo,
-            },
-            unidade_de_medida,
-            descricao,
+          tipo_de_analise: {
+            _id: tipoDeAnalise._id,
+            tipo: tipoDeAnalise.tipo,
           },
+          unidade_de_medida,
+          descricao,
         },
         { new: true }
       );
-      res.status(200).json({
-        message: "Dados atualizados com sucesso!",
-      });
+
+      return res.status(200).json({ message: "Dados atualizados com sucesso!" });
     } catch (error) {
-      res.status(500).json({ message: error });
-      return;
+      return res.status(500).json({ message: "Erro ao atualizar parâmetro de análise." });
     }
   }
 
   static async listarParametroAnalise(req, res) {
     try {
       const parametros = await ParametrosDeAnalise.find().select("-__v");
-
-      res.status(200).json({ parametros: parametros });
+      return res.status(200).json({ parametros });
     } catch (error) {
-      res.status(200).json({ error });
+      return res.status(500).json({ message: "Erro ao listar parâmetros de análise." });
     }
   }
 
   static async deletarParametroAnalise(req, res) {
-    const id = req.params.id;
-
-    const verificarParametro = await ParametrosDeAnalise.findById(id);
-
-    if (!verificarParametro) {
-      res.status(422).json({ message: "Parâmetro de análise não encontrado!" });
-      return;
-    }
+    const { id } = req.params;
 
     try {
+      const parametro = await ParametrosDeAnalise.findById(id);
+      if (!parametro) {
+        return res.status(404).json({ message: "Parâmetro de análise não encontrado!" });
+      }
+
       await ParametrosDeAnalise.deleteOne({ _id: id });
-      res.status(200).json({
-        message: "Parâmetro removido com sucesso!",
-      });
+      return res.status(200).json({ message: "Parâmetro removido com sucesso!" });
     } catch (error) {
-      res.status(500).json({ message: error });
-      return;
+      return res.status(500).json({ message: "Erro ao remover parâmetro de análise." });
     }
   }
 };

@@ -1,18 +1,16 @@
 const jwt = require("jsonwebtoken");
 const config = require("../../config");
 const bcrypt = require("bcrypt");
-const crypto = require("crypto");
 const createUserToken = require("../helpers/create-user-token");
 const getToken = require("../helpers/get-token");
 const getUserByToken = require("../helpers/get-user-by-token");
-const sendMail = require("../helpers/nodemailer");
 const User = require("../models/User");
+const sendForgotPasswordMail = require("../helpers/send-forgotpass-email");
 
 module.exports = class UserController {
   static async sigin(req, res) {
     const { name, email, password, confirmpassword } = req.body;
 
-    //validations
     if (!name) {
       res.status(422).json({ message: "O nome é obrigatório" });
       return;
@@ -51,7 +49,6 @@ module.exports = class UserController {
       return;
     }
 
-    // check if user exist
     const userExists = await User.findOne({ email: email });
 
     if (userExists) {
@@ -61,17 +58,15 @@ module.exports = class UserController {
       return;
     }
 
-    // email validation
+
     function validateEmail(email) {
       const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
       return emailRegex.test(email);
     }
 
-    // create a password
     const salt = await bcrypt.genSalt(12);
     const passwordHash = await bcrypt.hash(password, salt);
 
-    //create a user
     const user = new User({
       name: name,
       email: email,
@@ -100,7 +95,6 @@ module.exports = class UserController {
       return;
     }
 
-    // check if user exist
     const user = await User.findOne({ email: email }).select("+password");
     if (!user) {
       res.status(422).json({
@@ -109,7 +103,6 @@ module.exports = class UserController {
       return;
     }
 
-    // check if passowrd match with db pass
     const checkPassword = await bcrypt.compare(password, user.password);
     if (!checkPassword) {
       res.status(422).json({ message: "Senha inválida" });
@@ -133,7 +126,6 @@ module.exports = class UserController {
       const decoded = jwt.verify(token, config.token_key);
 
       currentUser = await User.findById(decoded.id).select("-password -__v");
-      //currentUser.password = undefined;
     } else {
       currentUser = null;
     }
@@ -156,13 +148,11 @@ module.exports = class UserController {
   static async editUser(req, res) {
     const id = req.params.id;
 
-    // check if user exists
     const token = getToken(req);
     const user = await getUserByToken(token);
 
-    const { name, email, phone} = req.body;
+    const { name, email, phone } = req.body;
 
-    //validations
     if (!name) {
       res.status(422).json({ message: "O nome é obrigatório" });
       return;
@@ -181,7 +171,6 @@ module.exports = class UserController {
       return;
     }
 
-    // check if email already taken exist
     const userExists = await User.findOne({ email: email });
 
     if (user.email !== email && userExists) {
@@ -198,9 +187,8 @@ module.exports = class UserController {
     }
     user.phone = phone;
 
-
     try {
-      //returns user updated data
+
       await User.findOneAndUpdate(
         { _id: user.id },
         { $set: user },
@@ -215,7 +203,6 @@ module.exports = class UserController {
       return;
     }
 
-    // email validation
     function validateEmail(email) {
       const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
       return emailRegex.test(email);
@@ -232,11 +219,9 @@ module.exports = class UserController {
     const id = req.params.id;
     const { authorization, level } = req.body;
 
-    // check if user exists
     const token = getToken(req);
     const user = await getUserByToken(token);
 
-    //validations
     if (user.level != "Administrador") {
       return res.status(403).json({ message: "Ação restrita!" });
     }
@@ -255,7 +240,6 @@ module.exports = class UserController {
     }
 
     try {
-      //returns user updated data
       await User.findOneAndUpdate(
         { _id: id },
         { $set: { authorization, level } },
@@ -274,11 +258,10 @@ module.exports = class UserController {
   static async deleteUserById(req, res) {
     const id = req.params.id;
 
-    // check if user exists
+
     const token = getToken(req);
     const user = await getUserByToken(token);
 
-    //validations
     if (user.level != "Administrador") {
       return res.status(403).json({ message: "Ação restrita!" });
     }
@@ -287,7 +270,7 @@ module.exports = class UserController {
         .status(403)
         .json({ message: "O usuário não pode se auto-deletar!" });
     }
-    const userToBeDeleted = await User.findById(id).select("-password");
+    const userToBeDeleted = await User.findById(id);
 
     if (!userToBeDeleted) {
       res.status(422).json({ message: "Usuário não encontrado" });
@@ -295,7 +278,6 @@ module.exports = class UserController {
     }
 
     try {
-      //returns user updated data
       await User.deleteOne({ _id: id });
       res.status(200).json({
         message: "Usuário deletado com sucesso!",
@@ -311,121 +293,12 @@ module.exports = class UserController {
 
     if (!email) return res.status(400).json({ message: "Email inválido" });
 
-    try {
-      const user = await User.findOne({ email });
-      if (!user) {
-        return res.status(400).json({ message: "Usuario não encontrado!" });
-      }
-      const token = crypto.randomBytes(30).toString("hex");
-      const now = new Date();
-      now.setHours(now.getHours() + 1);
+    sendForgotPasswordMail(email);
 
-      await User.findByIdAndUpdate(user._id, {
-        $set: {
-          passwordResetToken: token,
-          passwordResetExpires: now,
-        },
-      });
-      const body = `
-      <!DOCTYPE html>
-      <html lang="pt-BR">
-      <head>
-          <meta charset="UTF-8">
-          <meta name="viewport" content="width=device-width, initial-scale=1.0">
-          <title>Redefinição de Senha</title>
-          <link rel="preconnect" href="https://fonts.googleapis.com">
-          <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-          <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
-      </head>
-      <body style="font-family: 'Poppins', Arial, sans-serif">
-          <table width="100%" border="0" cellspacing="0" cellpadding="0">
-              <tr>
-                  <td align="center" style="padding: 20px;">
-                      <table class="content" width="600" border="0" cellspacing="0" cellpadding="0" style="border-collapse: collapse; border: 1px solid #cccccc;">
-                          <!-- Header -->
-                          <tr>
-                              <td class="header" style="padding: 40px; text-align: center; color: white; font-size: 24px;">
-                                  Alteração de Senha - AppLab
-                              </td>
-                          </tr>
-      
-                          <!-- Body -->
-                          <tr>
-                              <td class="body gray" style="padding: 40px; text-align: left; font-size: 16px; line-height: 1.6;">
-                                  Olá ${user.name}, <br><br>
-                                  Recebemos uma solicitação para redefinir sua senha. Se você fez essa solicitação, clique no botão abaixo para escolher uma nova senha:
-                                  <br><br>
-                                  Se você não solicitou a alteração de senha, por favor, ignore este e-mail. Sua senha atual permanecerá a mesma.
-                              </td>
-                          </tr>
-      
-                          <!-- Call to action Button -->
-                          <tr>
-                              <td class="gray" style="padding: 0px 40px 0px 40px; text-align: center;">
-                                  <!-- CTA Button -->
-                                  <table cellspacing="0" cellpadding="0" style="margin: auto;">
-                                      <tr>
-                                          <td align="center" class="btn-color" style="padding: 10px 20px; border-radius: 5px;">
-                                              <a href="${config.forgot_PASS_URL}/reset_password?token=${token}&email=${user.email}" target="_blank" style="color: #ffffff; text-decoration: none; font-weight: bold;">Redefinir Senha</a>
-                                          </td>
-                                      </tr>
-                                  </table>
-                              </td>
-                          </tr>
-      
-                          <!-- Extra Text -->
-                          <tr>
-                              <td class="body gray" style="padding: 40px; text-align: left; font-size: 16px; line-height: 1.6;">
-                                  Este link é válido por uma hora. Após esse período, será necessário solicitar novamente a redefinição de senha.
-                              </td>
-                          </tr>
-      
-                          <!-- Footer -->
-                          <tr>
-                              <td class="footer" style=" padding: 40px; text-align: center; color: white; font-size: 14px;">
-                                  &copy; 2024 AppLab. Todos os direitos reservados.
-                              </td>
-                          </tr>
-                      </table>
-                  </td>
-              </tr>
-          </table>
-      </body>
-      <style>
-      .btn-color{
-      background-color: #005cbb;
-      }
-     .gray{
-        background: #EEEEEE;
-      }
-      .footer{
-      background:#005cbb;
-      }
-     .header{
-       background:#005cbb;}
-        @media screen and (max-width: 600px) {
-          .content {
-              width: 100% !important;
-              display: block !important;
-              padding: 10px !important;
-          }
-          .header, .body, .footer {
-              padding: 20px !important;
-          }
-        }
-      </style>
-      </html>
-      `;
-      sendMail(email, "Alteração de senha AppLab", body);
-      res
-        .status(200)
-        .json({
-          message:
-            "Solicitação de redefinição de senha enviada com sucesso. Verifique seu e-mail para redefinir sua senha.",
-        });
-    } catch (error) {
-      res.status(400).json({ message: "Erro ao solicitar reset de password" });
-    }
+    res.status(200).json({
+      message:
+        "Solicitação de redefinição de senha enviada com sucesso. Verifique seu e-mail para redefinir sua senha.",
+    });
   }
 
   static async resetPassword(req, res) {
@@ -452,11 +325,9 @@ module.exports = class UserController {
           .json({ message: "Token expirado, faça uma nova solicitação!" });
       }
       if (!user_recovery.password && !user_recovery.confirmpassword) {
-        return res
-          .status(422)
-          .json({
-            message: "A senha e a confirmação da senha são obrigatórias",
-          });
+        return res.status(422).json({
+          message: "A senha e a confirmação da senha são obrigatórias",
+        });
       }
       if (user_recovery.password !== user_recovery.confirmpassword) {
         return res.status(422).json({ message: "A senhas não conferem!" });

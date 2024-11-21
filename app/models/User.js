@@ -26,8 +26,6 @@ const User = mongoose.model(
             required: true,
             default: false,
         },
-        
-        // Administrador, Operador ou basic Usuário
         level:{
             type: String,
             required : true,

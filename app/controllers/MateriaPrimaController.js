@@ -4,57 +4,60 @@ const getUserByToken = require("../helpers/get-user-by-token");
 
 module.exports = class MateriaPrimaController {
   static async novaMateriaPrima(req, res) {
-    const {nome_descricao, classe_tipo} = req.body;
+    const { nome_descricao, classe_tipo } = req.body;
 
     if (!nome_descricao) {
-      res
-        .status(422)
-        .json({ message: "A descição deve ser informada!" });
-      return;
+      return res.status(422).json({ message: "A descrição deve ser informada!" });
     }
     if (!classe_tipo) {
-      res
-        .status(422)
-        .json({ message: "O tipo deve ser especificado!" });
-      return;
+      return res.status(422).json({ message: "O tipo deve ser especificado!" });
     }
 
     const materiaPrima = new MateriaPrima({
-        nome_descricao: nome_descricao,
-        classe_tipo: classe_tipo,
+      nome_descricao: nome_descricao,
+      classe_tipo: classe_tipo,
     });
 
     try {
       await materiaPrima.save();
-      res.status(200).json({ message: "Matéria-prima cadastrada!" });
+      res.status(201).json({ 
+        message: "Matéria-prima cadastrada!",
+        materiaPrima: materiaPrima 
+      });
     } catch (error) {
-      res.status(500).json({ message: error });
+      res.status(500).json({ 
+        message: "Erro ao cadastrar matéria-prima",
+        error: error.message 
+      });
     }
   }
 
   static async editarMateriaPrima(req, res) {
-    const id = req.params.id;
-    const {nome_descricao, classe_tipo} = req.body;
+    const { id } = req.params;
+    const { nome_descricao, classe_tipo } = req.body;
 
     const verificarMateriaPrima = await MateriaPrima.findById(id);
 
     if (!verificarMateriaPrima) {
-      res.status(422).json({ message: "Matéria-prima não encontrada!" });
-      return;
+      return res.status(404).json({ message: "Matéria-prima não encontrada!" });
     }
 
     try {
-      await MateriaPrima.findOneAndUpdate(
-        { _id: id },
-        { $set: {nome_descricao, classe_tipo} },
-        { new: true }
+      const materiaPrimaAtualizada = await MateriaPrima.findByIdAndUpdate(
+        id,
+        { $set: { nome_descricao, classe_tipo } },
+        { new: true, runValidators: true }
       );
+
       res.status(200).json({
         message: "Dados atualizados com sucesso!",
+        materiaPrima: materiaPrimaAtualizada
       });
     } catch (error) {
-      res.status(500).json({ message: error });
-      return;
+      res.status(500).json({ 
+        message: "Erro ao atualizar matéria-prima",
+        error: error.message 
+      });
     }
   }
 
@@ -62,31 +65,37 @@ module.exports = class MateriaPrimaController {
     try {
       const materiaPrimas = await MateriaPrima.find().select("-__v");
 
-      res.status(200).json({ materiaPrimas: materiaPrimas });
+      res.status(200).json({ 
+        materiaPrimas: materiaPrimas,
+        total: materiaPrimas.length 
+      });
     } catch (error) {
-      res.status(200).json({ error });
+      res.status(500).json({ 
+        message: "Erro ao listar matérias-primas",
+        error: error.message 
+      });
     }
   }
 
   static async deletarMateriaPrima(req, res) {
-    
-    const id = req.params.id;
+    const { id } = req.params;
 
     const verificarMateriaPrima = await MateriaPrima.findById(id);
 
     if (!verificarMateriaPrima) {
-      res.status(422).json({ message: "Matéria-prima não encontrada!" });
-      return;
+      return res.status(404).json({ message: "Matéria-prima não encontrada!" });
     }
 
     try {
-      await MateriaPrima.deleteOne({ _id: id });
+      await MateriaPrima.findByIdAndDelete(id);
       res.status(200).json({
         message: "Matéria-prima removida com sucesso!",
       });
     } catch (error) {
-      res.status(500).json({ message: error });
-      return;
+      res.status(500).json({ 
+        message: "Erro ao deletar matéria-prima",
+        error: error.message 
+      });
     }
   }
 };
