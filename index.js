@@ -21,7 +21,7 @@ const config = require('./config');
 app.use(express.json())
 
 // Solve CORS
-app.use(cors({ credentials: true, origin:['http://localhost:4200','http://192.168.1.12:4200']}))
+app.use(cors({ credentials: true, origin:['http://localhost:4200','http://192.168.1.16:4200']}))
 
 // Public folder for images
 app.use(express.static('public')) 

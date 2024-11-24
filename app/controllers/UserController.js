@@ -58,7 +58,6 @@ module.exports = class UserController {
       return;
     }
 
-
     function validateEmail(email) {
       const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
       return emailRegex.test(email);
@@ -188,7 +187,6 @@ module.exports = class UserController {
     user.phone = phone;
 
     try {
-
       await User.findOneAndUpdate(
         { _id: user.id },
         { $set: user },
@@ -258,7 +256,6 @@ module.exports = class UserController {
   static async deleteUserById(req, res) {
     const id = req.params.id;
 
-
     const token = getToken(req);
     const user = await getUserByToken(token);
 
@@ -292,8 +289,11 @@ module.exports = class UserController {
     const { email } = req.body;
 
     if (!email) return res.status(400).json({ message: "Email inválido" });
-
-    sendForgotPasswordMail(email);
+    try {
+      sendForgotPasswordMail(email);
+    } catch (error) {
+      res.status(400).json({ message: "Erro ao solicitar reset de password" });
+    }
 
     res.status(200).json({
       message:

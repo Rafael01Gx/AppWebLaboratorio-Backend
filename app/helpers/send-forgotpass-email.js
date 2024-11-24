@@ -1,9 +1,9 @@
 const sendMail = require("./nodemailer");
 const crypto = require("crypto");
 const User = require("../models/User");
+const config = require("../../config");
 
 async function sendForgotPasswordMail(email) {
-  try {
     const user = await User.findOne({ email });
     if (!user) {
       return res.status(400).json({ message: "Usuario não encontrado!" });
@@ -109,8 +109,5 @@ async function sendForgotPasswordMail(email) {
         </html>
         `;
     sendMail(email, "Alteração de senha AppLab", body);
-  } catch (error) {
-    res.status(400).json({ message: "Erro ao solicitar reset de password" });
   }
-}
 module.exports = sendForgotPasswordMail;
