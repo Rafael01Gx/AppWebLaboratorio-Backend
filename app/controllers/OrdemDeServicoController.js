@@ -170,6 +170,20 @@ module.exports = class OrdemDeServicoController {
     }
   }
 
+  static async getOrdemDeServicoByOsNumber(req,res){
+    const numeroOs = req.params.os;
+    if(!numeroOs) return res.status(404).json({message: "Ordem de serviço não informada"})
+    try {
+      const ordemDeServico = await OrdemDeServico.findOne({ numeroOs });
+      if (!ordemDeServico) {
+        return res.status(404).json({ message: "Ordem de servico não encontrada" });
+      }
+      res.status(200).json({ ordemDeServico });
+    } catch (error) {
+      res.status(500).json({ message: error });
+    }
+  }
+
   static async deletarOrdemDeServico(req, res) {
     const id = req.params.id;
     const token = getToken(req);

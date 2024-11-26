@@ -13,6 +13,7 @@ const ConfiguracaoDeAnaliseRoutes = require('./app/routes/ConfiguracaoDeAnaliseR
 const MateriaPrimaRoutes = require('./app/routes/MateriaPrimaRoutes');
 const OrdemDeServicoRoutes = require('./app/routes/OrdemDeServicoRoutes');
 const AuthRoutes = require('./app/routes/AuthRoutes');
+const AnalyticalDataRoutes = require('./app/routes/AnalyticalDataRoutes');
 const config = require('./config');
 
 
@@ -35,6 +36,7 @@ app.use('/configuracaoanalises',ConfiguracaoDeAnaliseRoutes)
 app.use('/materiaprima',MateriaPrimaRoutes)
 app.use('/ordemdeservico',OrdemDeServicoRoutes)
 app.use('/api',AuthRoutes)
+app.use('/analytic',AnalyticalDataRoutes)
 
 
 
