@@ -30,12 +30,18 @@ const Amostra = mongoose.model(
           _id: { type: Schema.Types.ObjectId, required: true },
           name: { type: String, required: true },
           email: { type: String, required: true },
-          phone: { type: String, required: false }
+          phone: { type: String, required: false },
+          area: { type: String, required: false },
+          funcao: { type: String, required: false }
         },
         { _id: false }),
         required: true
       },
       resultados: {
+        type: Schema.Types.Mixed,
+        required: false
+      },
+      analistas: {
         type: Schema.Types.Mixed,
         required: false
       },

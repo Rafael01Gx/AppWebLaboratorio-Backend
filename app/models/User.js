@@ -21,6 +21,14 @@ const User = mongoose.model(
             type: String,
             required: false
         },
+        area:{
+            type: String,
+            required: false
+        },
+        funcao:{
+            type: String,
+            required: false
+        },
         authorization:{
             type: Boolean,
             required: true,

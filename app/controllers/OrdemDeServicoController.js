@@ -40,6 +40,8 @@ module.exports = class OrdemDeServicoController {
             name: user.name,
             email: user.email,
             phone: user.phone,
+            area: user.area,
+            funcao: user.funcao,
           },
         });
 
@@ -57,6 +59,8 @@ module.exports = class OrdemDeServicoController {
         name: user.name,
         email: user.email,
         phone: user.phone,
+        area: user.area,
+        funcao: user.funcao,
       },
       amostras: amostras,
       progresso: ordem_servico_progresso,
@@ -121,6 +125,8 @@ module.exports = class OrdemDeServicoController {
         if (ordemDeServico.status !== "Em Execução")
           update_amostra.status = ordemDeServico.status;
       }
+      if(ordemDeServico.observacao_adm)  updates_Os.observacao_adm = ordemDeServico.observacao_adm;
+      if(ordemDeServico.revisor_da_os)  updates_Os.revisor_da_os = ordemDeServico.revisor_da_os;
 
       const ordemAtualizada = await OrdemDeServico.findByIdAndUpdate(
         id,

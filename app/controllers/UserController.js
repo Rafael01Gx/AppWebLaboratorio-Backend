@@ -124,10 +124,11 @@ module.exports = class UserController {
 
       const decoded = jwt.verify(token, config.token_key);
 
-      currentUser = await User.findById(decoded.id).select("-password -__v");
+      currentUser = await User.findById(decoded.id).select("-__v");
     } else {
       currentUser = null;
     }
+
     res.status(200).send(currentUser);
   }
 
@@ -150,46 +151,49 @@ module.exports = class UserController {
     const token = getToken(req);
     const user = await getUserByToken(token);
 
-    const { name, email, phone } = req.body;
+    const { userEdit } = req.body;
 
-    if (!name) {
+    if (!userEdit.name) {
       res.status(422).json({ message: "O nome é obrigatório" });
       return;
     }
-    user.name = name;
+    user.name = user.name;
 
-    if (!email) {
+    if (userEdit.area) user.area = userEdit.area;
+    if (userEdit.funcao) user.funcao = userEdit.funcao;
+    
+    if (!userEdit.email) {
       res.status(422).json({ message: "O email é obrigatório" });
       return;
     }
 
-    if (!validateEmail(email)) {
+    if (!validateEmail(userEdit.email)) {
       res
         .status(422)
         .json({ message: "Esté endereço de e-mail não é válido!" });
       return;
     }
 
-    const userExists = await User.findOne({ email: email });
+    const userExists = await User.findOne({ email: userEdit.email });
 
-    if (user.email !== email && userExists) {
+    if (user.email !== userEdit.email && userExists) {
       res.status(422).json({
         message: "E-mail já cadastrado. Por favor, ultilize outro e-mail",
       });
       return;
     }
-    user.email = email;
+    user.email = userEdit.email;
 
-    if (!phone) {
+    if (!userEdit.phone) {
       res.status(422).json({ message: "O telefone é obrigatório" });
       return;
     }
-    user.phone = phone;
+    user.phone = userEdit.phone;
 
     try {
       await User.findOneAndUpdate(
         { _id: user.id },
-        { $set: user },
+        { $set:user },
         { new: true }
       );
 

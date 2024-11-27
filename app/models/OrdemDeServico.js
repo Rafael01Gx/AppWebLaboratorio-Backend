@@ -13,7 +13,9 @@ const OrdemDeServico = mongoose.model(
         _id: { type: Schema.Types.ObjectId, ref: 'User', required: true },
         name: { type: String, required: true },
         email: { type: String, required: true },
-        phone: { type: String, required: false }
+        phone: { type: String, required: false },
+        area: { type: String, required: false },
+        funcao: { type: String, required: false }
       },
       { _id: false }),
       required: true
@@ -51,7 +53,11 @@ const OrdemDeServico = mongoose.model(
     observacao_adm: {
       type: String,
       required: false
-    }
+    },
+    revisor_da_os: {
+      type: Schema.Types.Mixed,
+      required: false
+    },
     
   }, { timestamps: true })
 );
