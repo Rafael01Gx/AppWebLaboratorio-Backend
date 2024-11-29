@@ -19,6 +19,14 @@ module.exports = class AmostraController {
         return res.status(404).json({ message: "Amostra não encontrada!" });
       }
 
+      if (verificarAmostra.status == "Finalizada") {
+        const verificarStatusOrdemServico = await OrdemDeServico.findOne({numeroOs:verificarAmostra.numeroOs}).select('status')
+        if(verificarStatusOrdemServico.status == "Finalizada")return res.status(403).json({
+          message: "Não é permitido modificar dados aopós conclusão da Ordem de Serviço"
+        })
+      }
+
+
       await Amostra.findByIdAndUpdate(id, amostra);
 
       if (amostra.progresso && amostra.nome_amostra) {
