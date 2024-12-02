@@ -55,6 +55,18 @@ module.exports = class AmostraController {
     }
   }
 
+  static async listarFiltradasAmostras(req, res) {
+
+    const status = req.params.status
+
+    try {
+      const amostras = await Amostra.find({status}).select("-__v");
+      res.status(200).json({ amostras });
+    } catch (error) {
+      res.status(500).json({ message: "Erro ao listar as amostras.", error });
+    }
+  }
+
   static async listarAmostrasPorIdUsuario(req, res) {
     try {
       const token = getToken(req);
@@ -65,9 +77,9 @@ module.exports = class AmostraController {
       const user = await getUserByToken(token);
       if (!user) {
         return res.status(404).json({ message: "Usuário não encontrado!" });
-      }
-
-      const amostras = await Amostra.find({ "solicitante.id": user.id });
+      }   
+      const amostras = await Amostra.find({ "solicitante._id" : user._id });
+      
       res.status(200).json({ amostras });
     } catch (error) {
       res.status(500).json({ message: "Erro ao listar as amostras.", error });

@@ -8,6 +8,7 @@ const {checkLevelAdm ,checkLevelOp} = require('../helpers/check-user-level')
 
 router.patch('/editar/:id',verifyToken,checkLevelOp,AmostraController.editarAmostra) // Rota OP
 router.get('/listar-all',verifyToken,checkLevelOp,AmostraController.listarAmostras) // Rota OP
+router.get('/listar-all-filter/:status',verifyToken,checkLevelOp,AmostraController.listarFiltradasAmostras) // Rota OP
 router.get('/listar',verifyToken,AmostraController.listarAmostrasPorIdUsuario)
 router.get('/listar/listar-by-os/:id',verifyToken,AmostraController.listarAmostrasPorOrdemDeServico)
 router.delete('/deletar/:id',verifyToken,checkLevelAdm,AmostraController.deletarAmostra) // Rota ADMIN

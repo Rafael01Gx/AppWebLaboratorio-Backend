@@ -1,43 +1,20 @@
-
 const express = require("express");
 const cors = require("cors");
-const { port } = require('./config');
 const app = express()
-
-// RoutesImports
-const UserRoutes = require('./app/routes/UserRoutes');
-const TipoDeAnaliseRoutes = require('./app/routes/TipoDeAnaliseRoutes');
-const ParametrosDeAnaliseRoutes = require('./app/routes/ParametrosDeAnaliseRoutes');
-const AmostraRoutes = require('./app/routes/AmostraRoutes');
-const ConfiguracaoDeAnaliseRoutes = require('./app/routes/ConfiguracaoDeAnaliseRoutes');
-const MateriaPrimaRoutes = require('./app/routes/MateriaPrimaRoutes');
-const OrdemDeServicoRoutes = require('./app/routes/OrdemDeServicoRoutes');
-const AuthRoutes = require('./app/routes/AuthRoutes');
-const AnalyticalDataRoutes = require('./app/routes/AnalyticalDataRoutes');
 const config = require('./config');
-
+const routes = require('./app/routes/index.routes');
 
 
 // Config JSON response
 app.use(express.json())
 
 // Solve CORS
-app.use(cors({ credentials: true, origin:['http://localhost:4200','http://192.168.1.16:4200']}))
+app.use(cors({ credentials: true, origin:['http://localhost:4200','http://192.168.1.15:4200']}))
 
 // Public folder for images
 app.use(express.static('public')) 
 
 // Routes
-app.use('/users',UserRoutes)
-app.use('/analise',TipoDeAnaliseRoutes)
-app.use('/parametros',ParametrosDeAnaliseRoutes)
-app.use('/amostras',AmostraRoutes)
-app.use('/configuracaoanalises',ConfiguracaoDeAnaliseRoutes)
-app.use('/materiaprima',MateriaPrimaRoutes)
-app.use('/ordemdeservico',OrdemDeServicoRoutes)
-app.use('/api',AuthRoutes)
-app.use('/analytic',AnalyticalDataRoutes)
+app.use(routes);
 
-
-
-app.listen(port,()=>console.log("App run on port: ", port))
+app.listen(config.port,()=>console.log("App run on port: ", config.port))
