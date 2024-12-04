@@ -20,6 +20,6 @@ router.use('/configuracaoanalises', ConfiguracaoDeAnaliseRoutes);
 router.use('/materiaprima', MateriaPrimaRoutes);
 router.use('/ordemdeservico', OrdemDeServicoRoutes);
 router.use('/api', AuthRoutes);
-router.use('/analytic', AnalyticalDataRoutes);
+router.use('/analytics', AnalyticalDataRoutes);
 
 module.exports = router;

@@ -9,7 +9,7 @@ const routes = require('./app/routes/index.routes');
 app.use(express.json())
 
 // Solve CORS
-app.use(cors({ credentials: true, origin:['http://localhost:4200','http://192.168.1.15:4200']}))
+app.use(cors({ credentials: true, origin:['http://localhost:4200','http://192.168.1.4:4200']}))
 
 // Public folder for images
 app.use(express.static('public')) 
