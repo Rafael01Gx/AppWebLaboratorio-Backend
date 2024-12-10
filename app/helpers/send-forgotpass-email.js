@@ -58,7 +58,7 @@ async function sendForgotPasswordMail(email) {
                                     <table cellspacing="0" cellpadding="0" style="margin: auto;">
                                         <tr>
                                             <td align="center" class="btn-color" style="padding: 10px 20px; border-radius: 5px;">
-                                                <a href="${config.forgot_PASS_URL}/reset_password?token=${token}&email=${user.email}" target="_blank" style="color: #ffffff; text-decoration: none; font-weight: bold;">Redefinir Senha</a>
+                                                <a href="${config.aplication_URL}/recovery-password/reset_password?token=${token}&email=${user.email}" target="_blank" style="color: #ffffff; text-decoration: none; font-weight: bold;">Redefinir Senha</a>
                                             </td>
                                         </tr>
                                     </table>

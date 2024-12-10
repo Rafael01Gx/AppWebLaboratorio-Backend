@@ -151,7 +151,7 @@ module.exports = class UserController {
     const token = getToken(req);
     const user = await getUserByToken(token);
 
-    const { userEdit } = req.body;
+    const  {userEdit}  = req.body;
 
     if (!userEdit.name) {
       res.status(422).json({ message: "O nome é obrigatório" });
@@ -189,6 +189,7 @@ module.exports = class UserController {
       return;
     }
     user.phone = userEdit.phone;
+    if(userEdit.notifications) user.notifications = userEdit.notifications;
 
     try {
       await User.findOneAndUpdate(

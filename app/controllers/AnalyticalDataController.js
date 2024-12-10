@@ -6,15 +6,9 @@ module.exports = class AnalyticalDataController {
     const os_analytics = await getOrdemDeServicoStats();
     const ensaios_analytics = await getTotalEnsaiosPorData();
     const demanda_ensaios = await getDemandaDeEnsaiosPorSemana();
-    res.status(200).json({ os_analytics, ensaios_analytics , demanda_ensaios });
+    const ensaios_em_atraso = await getEnsaiosEmAtraso();
+    res.status(200).json({ os_analytics, ensaios_analytics , demanda_ensaios, ensaios_em_atraso });
   }
-  static async teste(req, res) {
-
-    const teste = await getEnsaiosPorSemana();
-
-    res.status(200).json({teste });
-  }
-
 };
 async function getDemandaDeEnsaiosPorSemana() {
   const twoMonthsAgo = new Date();
@@ -129,7 +123,6 @@ async function getDemandaDeEnsaiosPorSemana() {
   return resultado;
 }
 
-// Otimização para funções de agregação similares
 async function getOrdemDeServicoStats() {
   const aggregateData = async (matchCriteria, dateField) => {
     const result = await OrdemDeServico.aggregate([
@@ -179,7 +172,6 @@ async function getOrdemDeServicoStats() {
   return { total, finalizadas, datas };
 }
 
-// Otimização similar para getTotalEnsaiosPorData
 async function getTotalEnsaiosPorData() {
   const stats = await Amostra.aggregate([
     {
@@ -216,4 +208,177 @@ async function getTotalEnsaiosPorData() {
 
   // Uso direto do map
   return stats.map(item => [item.data, item.numero_total_de_ensaios]);
+}
+
+async function getEnsaiosEmAtraso() {
+  const currentDate = new Date();
+
+  const stats = await Amostra.aggregate([
+    // Filtro inicial otimizado
+    {
+      $match: {
+        status: { $ne: "Finalizada" },
+        prazo_inicio_fim: {
+          $ne: "Aguardando",
+          $exists: true
+        }
+      }
+    },
+
+    // Processamento de datas otimizado
+    {
+      $addFields: {
+        segundaData: {
+          $dateFromString: {
+            dateString: {
+              $arrayElemAt: [
+                { $split: ["$prazo_inicio_fim", " - "] },
+                1
+              ]
+            },
+            format: "%d/%m/%Y"
+          }
+        }
+      }
+    },
+
+    // Filtro de amostras em atraso
+    {
+      $match: {
+        segundaData: { $lt: currentDate }
+      }
+    },
+
+    // Processamento de ensaios e resultados unificado
+    {
+      $project: {
+        // Conversão de ensaios solicitados para array com tratamento de trim
+        ensaios_solicitados: {
+          $cond: {
+            if: { $eq: [{ $type: "$ensaios_solicitados" }, "string"] },
+            then: {
+              $filter: {
+                input: {
+                  $map: {
+                    input: { $split: ["$ensaios_solicitados", ","] },
+                    as: "ensaio",
+                    in: { $trim: { input: "$$ensaio", chars: " " } }
+                  }
+                },
+                cond: { $ne: ["$$this", ""] }
+              }
+            },
+            else: {
+              $cond: {
+                if: { $isArray: "$ensaios_solicitados" },
+                then: {
+                  $filter: {
+                    input: {
+                      $map: {
+                        input: "$ensaios_solicitados",
+                        as: "ensaio",
+                        in: { $trim: { input: "$$ensaio", chars: " " } }
+                      }
+                    },
+                    cond: { $ne: ["$$this", ""] }
+                  }
+                },
+                else: []
+              }
+            }
+          }
+        },
+        // Conversão de resultados para array de chaves
+        resultados_keys: {
+          $cond: {
+            if: { $and: [
+              { $ne: ["$resultados", null] },
+              { $eq: [{ $type: "$resultados" }, "object"] }
+            ]},
+            then: {
+              $map: {
+                input: { $objectToArray: "$resultados" },
+                as: "result",
+                in: "$$result.k"
+              }
+            },
+            else: []
+          }
+        }
+      }
+    },
+
+    // Contagem e agrupamento otimizado
+    {
+      $group: {
+        _id: null,
+        totalAmostrasEmAtraso: { $sum: 1 },
+        ensaios_solicitados: { $push: "$ensaios_solicitados" },
+        resultados: { $push: "$resultados_keys" }
+      }
+    },
+
+    // Processamento final otimizado
+    {
+      $project: {
+        totalAmostrasEmAtraso: 1,
+        ensaios_em_atraso: {
+          $filter: {
+            input: {
+              $map: {
+                input: { $setUnion: { $reduce: {
+                  input: "$ensaios_solicitados",
+                  initialValue: [],
+                  in: { $setUnion: ["$$value", "$$this"] }
+                }}},
+                as: "ensaio",
+                in: [
+                  "$$ensaio",
+                  { $max: [0, { $subtract: [
+                    { $sum: { $map: {
+                      input: "$ensaios_solicitados",
+                      as: "solicitados",
+                      in: { $cond: [
+                        { $in: ["$$ensaio", "$$solicitados"] },
+                        1,
+                        0
+                      ]}
+                    }}},
+                    { $sum: { $map: {
+                      input: "$resultados",
+                      as: "resultados",
+                      in: { $cond: [
+                        { $in: ["$$ensaio", "$$resultados"] },
+                        1,
+                        0
+                      ]}
+                    }}}
+                  ]}]}
+                ]
+              }
+            },
+            cond: { $gt: ["$$this.1", 0] } // Filtra apenas ensaios com quantidade maior que 0
+          }
+        }
+      }
+    },
+
+    // Estágio final para remover _id e manter apenas os campos desejados
+    {
+      $project: {
+        _id: 0,
+        totalAmostrasEmAtraso: 1,
+        ensaios_em_atraso: 1
+      }
+    }
+  ]);
+  if (stats.length > 0 && stats[0].ensaios_em_atraso) {
+    stats[0].ensaios_em_atraso = stats[0].ensaios_em_atraso.filter(item => item[1] > 0);
+  }
+
+  // Tratamento de retorno seguro
+  return stats[0] ?? {
+    totalAmostrasEmAtraso: 0,
+    ensaios_em_atraso: []
+  };
 }

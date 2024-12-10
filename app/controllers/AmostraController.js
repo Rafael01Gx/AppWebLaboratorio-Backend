@@ -47,6 +47,7 @@ module.exports = class AmostraController {
   }
 
   static async listarAmostras(req, res) {
+    
     try {
       const amostras = await Amostra.find().select("-__v");
       res.status(200).json({ amostras });

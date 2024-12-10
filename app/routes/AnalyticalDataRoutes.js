@@ -3,11 +3,11 @@ const AnalyticalDataController = require('../controllers/AnalyticalDataControlle
 
 //middleware
 const verifyToken = require('../helpers/verify-token')
-const {checkLevelAdm } = require('../helpers/check-user-level')
+const {checkLevelOp } = require('../helpers/check-user-level')
 
 
-router.get('/analytical-data',verifyToken,checkLevelAdm,AnalyticalDataController.getAnalytical) // Rota OP
-router.get('/analytical-data-teste',verifyToken,checkLevelAdm,AnalyticalDataController.teste) // Rota OP
+router.get('/analytical-data',verifyToken,checkLevelOp,AnalyticalDataController.getAnalytical) // Rota OP
+
 
 
 

@@ -47,6 +47,24 @@ const User = mongoose.model(
             type: Date,
             select:false
         },
+        notifications: [new Schema({
+            title: {
+                type: String,
+                required: true
+            },
+            message: {
+                type: String,
+                required: true
+            },
+            data: {
+                type: String,
+                required: true
+            },
+            read: {
+                type: Boolean,
+                default: false
+            }
+        })]
 
     },{timestamps: true})
 )

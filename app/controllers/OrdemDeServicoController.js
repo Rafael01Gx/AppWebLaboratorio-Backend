@@ -5,6 +5,8 @@ const getUserByToken = require("../helpers/get-user-by-token");
 const OrdemDeServico = require("../models/OrdemDeServico");
 const gerarNumeroOrdemDeServico = require("../helpers/generate-os-number");
 const enviarEmailNovaOs = require("../helpers/send-new-order-email");
+const enviarEmailOsFinalizada = require("../helpers/send-completed-service-email");
+const {notificacaoNovaOs, notificacaoConclusaoDeOS} = require("../helpers/sendNotifications");
 
 module.exports = class OrdemDeServicoController {
   static async novaOrdemDeServico(req, res) {
@@ -67,10 +69,12 @@ module.exports = class OrdemDeServicoController {
       data_solicitacao: data_solicitacao,
       observacao: observacao,
     });
+    
     try {
       await ordemDeServico.save();
       res.status(200).json({ message: "Ordem de serviço criada com sucesso!" });
       enviarEmailNovaOs(ordemDeServico);
+      notificacaoNovaOs(ordemDeServico)
     } catch (error) {
       return res.status(500).json({ message: error.message });
     }
@@ -139,6 +143,10 @@ module.exports = class OrdemDeServicoController {
           { numeroOs: ordemServico.numeroOs },
           { $set: update_amostra }
         );
+      }
+      if(updates_Os.status=="Finalizada"){
+        notificacaoConclusaoDeOS(ordemServico)
+        enviarEmailOsFinalizada(ordemServico)
       }
 
       res.status(200).json({
