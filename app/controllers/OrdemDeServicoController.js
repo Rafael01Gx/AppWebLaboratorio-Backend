@@ -72,9 +72,10 @@ module.exports = class OrdemDeServicoController {
     
     try {
       await ordemDeServico.save();
-      res.status(200).json({ message: "Ordem de serviço criada com sucesso!" });
+      console.log(ordemDeServico)
+      res.status(200).json({ message: "Ordem de serviço criada com sucesso!" , ordemDeServico: ordemDeServico});
       enviarEmailNovaOs(ordemDeServico);
-      notificacaoNovaOs(ordemDeServico)
+      notificacaoNovaOs(ordemDeServico);
     } catch (error) {
       return res.status(500).json({ message: error.message });
     }

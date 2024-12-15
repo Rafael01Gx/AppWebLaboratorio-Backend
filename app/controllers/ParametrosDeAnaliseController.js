@@ -82,6 +82,7 @@ module.exports = class ParametrosDeAnaliseController {
   static async deletarParametroAnalise(req, res) {
     const { id } = req.params;
 
+
     try {
       const parametro = await ParametrosDeAnalise.findById(id);
       if (!parametro) {
