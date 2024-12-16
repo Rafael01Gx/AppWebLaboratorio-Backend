@@ -8,7 +8,7 @@ const {checkLevelOp} = require('../helpers/check-user-level')
 
 router.post('/criar',verifyToken,checkLevelOp,TipoDeAnaliseController.novoTipoDeAnalise) // Rota Op
 router.patch('/editar/:id',verifyToken,checkLevelOp,TipoDeAnaliseController.editarTipoDeAnalise) // Rota Op
-router.get('/listar',verifyToken,checkLevelOp,TipoDeAnaliseController.listarTipoDeAnalise) // Rota Op
+router.get('/listar',verifyToken,TipoDeAnaliseController.listarTipoDeAnalise) // Rota Op
 router.delete('/deletar/:id',verifyToken,checkLevelOp,TipoDeAnaliseController.deletarTipoDeAnalise) // Rota Op
 
 

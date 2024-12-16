@@ -72,7 +72,6 @@ module.exports = class OrdemDeServicoController {
     
     try {
       await ordemDeServico.save();
-      console.log(ordemDeServico)
       res.status(200).json({ message: "Ordem de serviço criada com sucesso!" , ordemDeServico: ordemDeServico});
       enviarEmailNovaOs(ordemDeServico);
       notificacaoNovaOs(ordemDeServico);

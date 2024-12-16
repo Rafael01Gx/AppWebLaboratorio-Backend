@@ -9,7 +9,7 @@ const config = require("./config");
 const routes = require("./app/routes/index.routes");
 
 
-  const logStream = rfs.createStream('access.log', {
+const logStream = rfs.createStream('access.log', {
     interval: '1d',
     path: path.join(__dirname, 'logs'),
   });
@@ -38,7 +38,7 @@ app.use(
 app.use(
   cors({
     credentials: true,
-    origin: ["http://localhost:4200",config.aplication_URL],
+    origin: ["http://localhost:4200",config.aplication_URL,"http://192.168.1.16:4200"],
   })
 );
 
