@@ -3,15 +3,17 @@ const cors = require("cors");
 const morgan = require("morgan");
 const { v4: uuidv4 } = require("uuid");
 const rfs = require('rotating-file-stream');
+const fs = require('fs');
 const path = require('path');
 const app = express();
 const config = require("./config");
 const routes = require("./app/routes/index.routes");
 
-
+const logsDir = path.join(__dirname, 'logs');
+if (!fs.existsSync(logsDir)) { fs.mkdirSync(logsDir); }
 const logStream = rfs.createStream('access.log', {
-    interval: '1d',
-    path: path.join(__dirname, 'logs'),
+    interval: '1h',
+    path: logsDir,
   });
 
 
@@ -22,6 +24,7 @@ app.use((req, res, next) => {
   next();
 });
 morgan.token("id", (req) => req.id);
+
 app.use(
   morgan(function (tokens, req, res) {
     return JSON.stringify({
