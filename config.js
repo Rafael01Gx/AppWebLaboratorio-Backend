@@ -2,7 +2,7 @@ const env = require('env-var');
 require('dotenv').config();
 const config = {
     token_key: env.get('TOKEN_KEY').required().asString(),
-    db_URL: env.get('DATABASE_URL').required().asUrlString(),
+    db_URL: env.get('DATABASE_URL').required().asString(),
     port: env.get('LOCAL_PORT').required().asInt(),
     aplication_URL: env.get('APLICATION_URL').required().asString(),
     mail_HOST: env.get('MAIL_HOST').required().asString(),

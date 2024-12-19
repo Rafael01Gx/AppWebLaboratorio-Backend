@@ -12,7 +12,7 @@ const routes = require("./app/routes/index.routes");
 const logsDir = path.join(__dirname, 'logs');
 if (!fs.existsSync(logsDir)) { fs.mkdirSync(logsDir); }
 const logStream = rfs.createStream('access.log', {
-    interval: '1h',
+    interval: '1d',
     path: logsDir,
   });
 
@@ -41,7 +41,7 @@ app.use(
 app.use(
   cors({
     credentials: true,
-    origin: ["http://localhost:4200",config.aplication_URL,"http://192.168.1.16:4200"],
+    origin: ["http://localhost:4200",config.aplication_URL,"http://192.168.1.4:4200"],
   })
 );
 
