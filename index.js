@@ -41,7 +41,7 @@ app.use(
 app.use(
   cors({
     credentials: true,
-    origin: ["http://localhost:4200",config.aplication_URL,"http://192.168.1.4:4200"],
+    origin: ["http://localhost:4200",config.aplication_URL,"http://192.168.1.4:4200","https://rafael01gx.github.io/teste-app-lab"],
   })
 );
 
